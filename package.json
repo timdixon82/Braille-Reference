@@ -1,0 +1,20 @@
+{
+  "name": "braille-reference",
+  "version": "0.1.0",
+  "description": "Interactive UEB Braille reference for Grade 1 and Grade 2.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint:html": "html-validate index.html",
+    "lint:css": "stylelint --allow-empty-input \"css/**/*.css\"",
+    "lint:js": "eslint --no-error-on-unmatched-pattern \"js/**/*.js\"",
+    "lint": "npm run lint:html && npm run lint:css && npm run lint:js"
+  },
+  "devDependencies": {
+    "eslint": "^9.26.0",
+    "globals": "^16.0.0",
+    "html-validate": "^11.2.0",
+    "stylelint": "^16.19.1",
+    "stylelint-config-standard": "^38.0.0"
+  }
+}
