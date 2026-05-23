@@ -59,6 +59,10 @@ Add a `package.json` at the repository root, marked `"private": true`, with the 
 
 Standard: [AgentTeam global wiki: decisions/006-adopted-static-project-standards.md](../AgentTeam/docs/decisions/006-adopted-static-project-standards.md), standard 4.
 
+### Swap GoatCounter tracker placeholder before merge
+
+The GoatCounter snippet in `index.html` currently uses the placeholder value `__BRAILLE_REFERENCE_TRACKER_PLACEHOLDER__` for the `data-goatcounter` attribute. Before this pull request is merged, swap the placeholder for the real tracker URL from Tim's GoatCounter dashboard. Sonja batches this question to Tim (Q53 or next available).
+
 ## Minor accessibility improvements
 
 These are not blocking issues but improve the project's accessibility posture toward full WCAG 2.2 AAA conformance.

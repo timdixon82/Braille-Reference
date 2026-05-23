@@ -26,6 +26,10 @@ Architecture Decision Records, numbered in the order Jacob proposed them during 
 - [003: GitHub Pages hosting and the security-header constraint](decisions/003-github-pages-security-headers.md)
 - [004: Zero third-party runtime dependencies](decisions/004-zero-dependencies.md)
 
+## Privacy
+
+- [Privacy](privacy.md): analytics posture, GoatCounter implementation, and data collection statement.
+
 ## Exceptions
 
 Recorded accessibility and security exceptions. The GitHub Pages security-header exception is covered by the team's standing exception, approved by Tim on 2026-05-23.
