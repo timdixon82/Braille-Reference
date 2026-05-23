@@ -59,10 +59,6 @@ Add a `package.json` at the repository root, marked `"private": true`, with the 
 
 Standard: [AgentTeam global wiki: decisions/006-adopted-static-project-standards.md](../AgentTeam/docs/decisions/006-adopted-static-project-standards.md), standard 4.
 
-### Obtain Tim's approval for security exceptions 001 and 002
-
-The two security exceptions in `docs/exceptions/` are recorded but not yet approved by Tim. Sonja must obtain Tim's sign-off and record the approval date in each exception file before the project's first release.
-
 ## Minor accessibility improvements
 
 These are not blocking issues but improve the project's accessibility posture toward full WCAG 2.2 AAA conformance.

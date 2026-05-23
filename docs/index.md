@@ -28,10 +28,9 @@ Architecture Decision Records, numbered in the order Jacob proposed them during 
 
 ## Exceptions
 
-Recorded accessibility and security exceptions, each approved by Tim Dixon.
+Recorded accessibility and security exceptions. The GitHub Pages security-header exception is covered by the team's standing exception, approved by Tim on 2026-05-23.
 
-- [001: Absent security response headers on GitHub Pages](exceptions/001-security-headers.md)
-- [002: X-Frame-Options and Permissions-Policy not deliverable](exceptions/002-clickjacking-permissions.md)
+- [GitHub Pages security-header gap](exceptions/github-pages-headers.md): pointer to the team's standing exception in the global wiki.
 
 ## Operations
 
