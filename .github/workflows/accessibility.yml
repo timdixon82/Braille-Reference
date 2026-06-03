@@ -1,22 +1,22 @@
 # Accessibility checks at WCAG 2.2 AAA using Pa11y and axe-core.
 #
-# Runs on every pull request. Serves Braille-Reference locally on port
-# 8080 with Python's built-in HTTP server, installs Pa11y and axe-core
-# CLI plus wait-on, and runs both tools against index.html.
+# Two complementary patterns keep the checks green across projects:
 #
-# Two well-known GitHub-Actions runner issues are handled here:
+#   Tool pinning. Pa11y, @axe-core/cli, and wait-on are pinned in
+#   .github/accessibility-tools/package.json so Dependabot can track
+#   and propose version bumps automatically. They are installed via
+#   npm ci against that manifest, never with npm install -g.
 #
-#   1. Pa11y, via Puppeteer, needs --no-sandbox because the runner
-#      disables unprivileged user namespaces. Pa11y picks up the
-#      pa11y.json file in the repository root, whose
-#      chromeLaunchConfig.args sets --no-sandbox and
-#      --disable-setuid-sandbox.
+#   ChromeDriver matching. The Chrome for Testing CDN supplies a
+#   ChromeDriver binary whose version matches the runner's system
+#   Chrome exactly. The matching binary path is exported into
+#   GITHUB_ENV so the axe step can address it via --chromedriver-path.
+#   If the CDN download fails, axe falls back to the system ChromeDriver
+#   and a warning is printed.
 #
-#   2. The axe-core CLI uses ChromeDriver via Selenium. The runner has
-#      a specific Chrome version; we install a matching ChromeDriver
-#      via the Chrome for Testing CDN before running axe. The
-#      --chrome-options=no-sandbox argument passes through to the
-#      Chrome process the driver launches.
+#   Pa11y uses its bundled Puppeteer with the system Chrome binary,
+#   pointed at via pa11y.ci.json (derived at CI time from pa11y.json).
+#   PUPPETEER_EXECUTABLE_PATH is scoped to the Pa11y step only.
 #
 # Security note: no untrusted GitHub context variables are used in any
 # run step. All run commands are fixed strings.
@@ -40,14 +40,22 @@ jobs:
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e  # v6.4.0
         with:
           node-version: lts/*
+          cache: npm
+          cache-dependency-path: .github/accessibility-tools/package-lock.json
 
       - name: Install accessibility tools
-        run: npm install -g pa11y@9.1.1 @axe-core/cli@4.11.3 wait-on@8.0.1
+        # Tools are managed in .github/accessibility-tools/package.json so
+        # Dependabot can track and propose version bumps automatically.
+        run: npm ci
+        working-directory: .github/accessibility-tools
+
+      - name: Add accessibility tools to PATH
+        run: echo "$GITHUB_WORKSPACE/.github/accessibility-tools/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Install matching ChromeDriver for axe-core
         run: |
           # Detect the full Chrome version from the binary ChromeDriver uses.
-          # Probe in the same order ChromeDriver checks binaries.
+          # Probe in the same order ChromeDriver checks for binaries.
           CHROME_FULL=""
           for chrome_bin in /opt/google/chrome/chrome /opt/google/chrome/google-chrome \
               /usr/bin/google-chrome /usr/bin/google-chrome-stable; do
@@ -57,7 +65,8 @@ jobs:
             fi
           done
           if [ -z "$CHROME_FULL" ]; then
-            echo "WARNING: Could not detect Chrome version; axe will use system ChromeDriver." && exit 0
+            echo "WARNING: Could not detect Chrome version; axe will use system ChromeDriver."
+            exit 0
           fi
           echo "Detected Chrome ${CHROME_FULL}."
           mkdir -p "$HOME/chromedriver-matching"
@@ -78,11 +87,11 @@ jobs:
           CHROME=$(which google-chrome-stable 2>/dev/null || which google-chrome 2>/dev/null || which chromium 2>/dev/null)
           jq --arg chrome "$CHROME" '.chromeLaunchConfig.executablePath = $chrome' pa11y.json > pa11y.ci.json
 
-      - name: Serve the Braille-Reference site in the background
+      - name: Serve the site in the background
         run: python3 -m http.server 8080 &
 
       - name: Wait for the server to be ready
-        run: npx wait-on http://localhost:8080 --timeout 15000
+        run: wait-on http://localhost:8080 --timeout 15000
 
       - name: Pa11y on index.html at WCAG 2.2 AAA
         run: pa11y --standard WCAG2AAA --config pa11y.ci.json http://localhost:8080/index.html
