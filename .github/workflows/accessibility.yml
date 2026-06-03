@@ -2,25 +2,26 @@
 #
 # Two complementary patterns keep the checks green across projects:
 #
-#   Tool pinning (template pattern). Pa11y, @axe-core/cli, and wait-on are
-#   pinned in .github/accessibility-tools/package.json so Dependabot can
-#   track and propose version bumps automatically. They are installed via
+#   Tool pinning. Pa11y, @axe-core/cli, and wait-on are pinned in
+#   .github/accessibility-tools/package.json so Dependabot can track
+#   and propose version bumps automatically. They are installed via
 #   npm ci against that manifest, never with npm install -g.
 #
-#   Chrome and ChromeDriver matching (cross-project pattern from
-#   Sophie's Escape: Witch's Castle, currently green). browser-driver-manager
-#   installs a matched Chrome and ChromeDriver pair into the runner's home
-#   directory, sidestepping the GitHub-Actions Chrome-version-drift problem
-#   without depending on the Chrome for Testing CDN. The exact binary paths
-#   are exported into GITHUB_ENV so the Pa11y and axe steps can address them
-#   directly. PUPPETEER_EXECUTABLE_PATH is scoped to the Pa11y step only,
-#   so Puppeteer-using tools downstream are not affected.
+#   ChromeDriver matching. The Chrome for Testing CDN supplies a
+#   ChromeDriver binary whose version matches the runner's system
+#   Chrome exactly. The matching binary path is exported into
+#   GITHUB_ENV so the axe step can address it via --chromedriver-path.
+#   If the CDN download fails, axe falls back to the system ChromeDriver
+#   and a warning is printed.
 #
-# Known limitation: the app may require JavaScript execution to render.
-# Pa11y and axe-core run against the served HTML; full rendered-interface
-# testing is Carol's responsibility in her manual test pass.
+#   Pa11y uses its bundled Puppeteer with the system Chrome binary,
+#   pointed at via pa11y.ci.json (derived at CI time from pa11y.json).
+#   PUPPETEER_EXECUTABLE_PATH is scoped to the Pa11y step only.
 #
-# Adapt the "Serve the site" step and URLs to this project's stack.
+# Security note: no untrusted GitHub context variables are used in any
+# run step. All run commands are fixed strings.
+#
+# Action versions are pinned to commit SHAs verified on 2026-05-23.
 
 name: Accessibility
 on:
@@ -51,39 +52,54 @@ jobs:
       - name: Add accessibility tools to PATH
         run: echo "$GITHUB_WORKSPACE/.github/accessibility-tools/node_modules/.bin" >> "$GITHUB_PATH"
 
-      - name: Install browser-driver-manager
-        run: npm install -g browser-driver-manager
-
-      - name: Install matching Chrome and ChromeDriver versions
-        run: npx browser-driver-manager install chrome
-
-      - name: Set Chrome and ChromeDriver paths for accessibility tools
+      - name: Install matching ChromeDriver for axe-core
         run: |
-          CHROME=$(find /home/runner/.browser-driver-manager/chrome -name "chrome" -type f 2>/dev/null | head -1)
-          DRIVER=$(find /home/runner/.browser-driver-manager/chromedriver -name "chromedriver" -type f 2>/dev/null | head -1)
-          echo "A11Y_CHROME=${CHROME:-/usr/bin/google-chrome-stable}" >> "$GITHUB_ENV"
-          echo "A11Y_CHROMEDRIVER=${DRIVER}" >> "$GITHUB_ENV"
+          # Detect the full Chrome version from the binary ChromeDriver uses.
+          # Probe in the same order ChromeDriver checks for binaries.
+          CHROME_FULL=""
+          for chrome_bin in /opt/google/chrome/chrome /opt/google/chrome/google-chrome \
+              /usr/bin/google-chrome /usr/bin/google-chrome-stable; do
+            if [ -x "$chrome_bin" ]; then
+              CHROME_FULL=$("$chrome_bin" --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+              break
+            fi
+          done
+          if [ -z "$CHROME_FULL" ]; then
+            echo "WARNING: Could not detect Chrome version; axe will use system ChromeDriver."
+            exit 0
+          fi
+          echo "Detected Chrome ${CHROME_FULL}."
+          mkdir -p "$HOME/chromedriver-matching"
+          if curl -sfL \
+              "https://storage.googleapis.com/chrome-for-testing-public/${CHROME_FULL}/linux64/chromedriver-linux64.zip" \
+              -o /tmp/chromedriver.zip; then
+            unzip -q /tmp/chromedriver.zip -d /tmp/chromedriver-extract
+            install -m 0755 /tmp/chromedriver-extract/chromedriver-linux64/chromedriver \
+              "$HOME/chromedriver-matching/chromedriver"
+            echo "CHROMEDRIVER_PATH=$HOME/chromedriver-matching/chromedriver" >> "$GITHUB_ENV"
+            echo "Installed ChromeDriver ${CHROME_FULL}."
+          else
+            echo "WARNING: CDN download failed; axe will use system ChromeDriver."
+          fi
+
+      - name: Build CI pa11y config with system Chrome path
+        run: |
+          CHROME=$(which google-chrome-stable 2>/dev/null || which google-chrome 2>/dev/null || which chromium 2>/dev/null)
+          jq --arg chrome "$CHROME" '.chromeLaunchConfig.executablePath = $chrome' pa11y.json > pa11y.ci.json
 
       - name: Serve the site in the background
-        # Adapt this step to the project's stack.
-        # For a static site: python3 -m http.server 8080 &
-        # For a Node project: npm start & or npm run dev &
         run: python3 -m http.server 8080 &
 
       - name: Wait for the server to be ready
         run: wait-on http://localhost:8080 --timeout 15000
 
-      - name: Pa11y at WCAG 2.2 AAA
-        # Adapt the URL to match the project's entry point.
-        env:
-          PUPPETEER_EXECUTABLE_PATH: ${{ env.A11Y_CHROME }}
-        run: pa11y --standard WCAG2AAA http://localhost:8080/index.html
+      - name: Pa11y on index.html at WCAG 2.2 AAA
+        run: pa11y --standard WCAG2AAA --config pa11y.ci.json http://localhost:8080/index.html
 
-      - name: axe-core at WCAG 2.2 AAA
-        # Adapt the URL to match the project's entry point.
+      - name: axe-core on index.html at WCAG 2.2 AAA
         run: |
-          if [ -n "${A11Y_CHROMEDRIVER:-}" ]; then
-            axe http://localhost:8080/index.html --tags wcag2a,wcag2aa,wcag2aaa,wcag22aa,wcag22aaa --chrome-options="no-sandbox" --chromedriver-path "$A11Y_CHROMEDRIVER"
+          if [ -n "${CHROMEDRIVER_PATH:-}" ]; then
+            axe http://localhost:8080/index.html --tags wcag2a,wcag2aa,wcag2aaa,wcag22aa,wcag22aaa --chrome-options=no-sandbox --chromedriver-path "$CHROMEDRIVER_PATH"
           else
-            axe http://localhost:8080/index.html --tags wcag2a,wcag2aa,wcag2aaa,wcag22aa,wcag22aaa --chrome-options="no-sandbox"
+            axe http://localhost:8080/index.html --tags wcag2a,wcag2aa,wcag2aaa,wcag22aa,wcag22aaa --chrome-options=no-sandbox
           fi
