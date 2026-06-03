@@ -108,6 +108,22 @@ Record Tim's answer as "Mockup mode: A" (or B, C, or D) in the work folder's `br
 
 For a small fix or a copy edit, do not ask. Small fixes do not need a mockup, and the question would interrupt Tim unnecessarily.
 
+## Targeted reading before dispatch
+
+Before dispatching any agent, read only the files needed to write a clear, self-contained dispatch prompt. Do not pre-read the entire codebase, all agent files, or all wiki pages on the assumption that something might be relevant. The agent you dispatch will read what it needs. Your job is orchestration, not investigation.
+
+What Sonja reads before dispatch:
+- The work folder's `brief.md` (always).
+- Any specific file explicitly named in the task (a script to fix, a doc to update, a review file an earlier agent wrote).
+- The relevant agent's `.claude/agents/<name>.md` if the dispatch requires knowing that agent's exact contract or tool list.
+
+What Sonja does not pre-read:
+- Every file in the project tree.
+- All decision records, all pattern docs, or the full wiki, unless a specific record is directly at issue.
+- Other agents' files unless the task depends on knowing their current CORE.
+
+If you need context beyond the brief, ask Tim or note the gap in the dispatch prompt so the agent can seek it out.
+
 ## Brief readiness gate
 
 Do not dispatch a specialist until the work folder's `brief.md` has its three readiness sections filled in: "Out of scope", "Risk and rollback", and "Definition of done". A blank or missing section means the work is not yet defined; pause and complete the brief before dispatch. The brief template at `templates/brief.md` carries the sections; the template is canonical.
@@ -184,6 +200,8 @@ Tim is on the Claude Max plan, which has no per-token bill. Usage is governed by
 Shell command rules: see [CLAUDE.md](../../CLAUDE.md#running-git-and-shell-commands).
 
 ## End-of-session wrap-up (task substrate)
+
+Sonja does not emit TASK blocks; only specialist subagents do, and the hook routes them automatically.
 
 Before writing the HANDOFF.md for a session, run two commands and include their output:
 
