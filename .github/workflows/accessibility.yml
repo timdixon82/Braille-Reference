@@ -57,6 +57,11 @@ jobs:
         with:
           install-chromedriver: true
 
+      - name: Add action-installed Chrome to PATH
+        env:
+          SETUP_CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: echo "$(dirname "$SETUP_CHROME_PATH")" >> "$GITHUB_PATH"
+
       - name: Serve the site in the background
         run: python3 -m http.server 8080 &
 
@@ -69,4 +74,6 @@ jobs:
         run: pa11y --standard WCAG2AAA http://localhost:8080/index.html
 
       - name: axe-core on index.html at WCAG 2.2 AAA
-        run: axe http://localhost:8080/index.html --tags wcag2a,wcag2aa,wcag2aaa,wcag22aa,wcag22aaa --chrome-options="no-sandbox" --chromedriver-path "${{ steps.chrome.outputs.chromedriver-path }}"
+        env:
+          CHROMEDRIVER_PATH: ${{ steps.chrome.outputs.chromedriver-path }}
+        run: axe http://localhost:8080/index.html --tags wcag2a,wcag2aa,wcag2aaa,wcag22aa,wcag22aaa --chrome-options="no-sandbox" --chromedriver-path "$CHROMEDRIVER_PATH"
