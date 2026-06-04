@@ -21,6 +21,12 @@
 # Security note: no untrusted GitHub context variables are used in any
 # run step. All run commands are fixed strings.
 #
+# Project-specific note: browser-driver-manager (the template default)
+# installs to a path not found by `find` on ubuntu-latest runners, causing
+# a version-mismatch between system Chrome and system ChromeDriver. The
+# Chrome for Testing CDN pattern (from PR 4, confirmed green) is used here
+# instead. Recorded as a project-specific override of the template default.
+#
 # Action versions are pinned to commit SHAs verified on 2026-05-23.
 
 name: Accessibility
