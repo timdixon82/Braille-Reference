@@ -15,6 +15,15 @@
 #   of the Chrome for Testing CDN approach. PUPPETEER_EXECUTABLE_PATH is scoped
 #   to the Pa11y step only, so Puppeteer-using tools downstream are not affected.
 #
+#   Binary path for axe-core. --chromedriver-path tells axe which ChromeDriver
+#   binary to use, but ChromeDriver also needs to know which Chrome binary to
+#   launch. On Linux, ChromeDriver uses a hardcoded lookup list (not PATH) and
+#   finds the system Chrome, which may be a different version. The --chrome-path
+#   flag in axe-cli calls setChromeBinaryPath() in selenium-webdriver, directing
+#   ChromeDriver to the action-installed Chrome binary explicitly and bypassing
+#   the hardcoded lookup entirely. Both --chromedriver-path and --chrome-path
+#   use the env: pattern so no ${{ }} expression appears in a run: command.
+#
 # Known limitation: the app may require JavaScript execution to render.
 # Pa11y and axe-core run against the served HTML; full rendered-interface
 # testing is Carol's responsibility in her manual test pass.
