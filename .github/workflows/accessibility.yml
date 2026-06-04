@@ -57,11 +57,6 @@ jobs:
         with:
           install-chromedriver: true
 
-      - name: Add action-installed Chrome to PATH
-        env:
-          SETUP_CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
-        run: echo "$(dirname "$SETUP_CHROME_PATH")" >> "$GITHUB_PATH"
-
       - name: Serve the site in the background
         run: python3 -m http.server 8080 &
 
@@ -74,6 +69,12 @@ jobs:
         run: pa11y --standard WCAG2AAA http://localhost:8080/index.html
 
       - name: axe-core on index.html at WCAG 2.2 AAA
+        # --chrome-path calls setChromeBinaryPath() in selenium-webdriver,
+        # directing ChromeDriver to the action-installed Chrome rather than
+        # the system Chrome it would otherwise find via its own discovery.
+        # --chromedriver-path selects the matching ChromeDriver binary.
+        # Both use env: so no ${{ }} expression appears in a run: command.
         env:
           CHROMEDRIVER_PATH: ${{ steps.chrome.outputs.chromedriver-path }}
-        run: axe http://localhost:8080/index.html --tags wcag2a,wcag2aa,wcag2aaa,wcag22aa,wcag22aaa --chrome-options="no-sandbox" --chromedriver-path "$CHROMEDRIVER_PATH"
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: axe http://localhost:8080/index.html --tags wcag2a,wcag2aa,wcag2aaa,wcag22aa,wcag22aaa --chrome-options="no-sandbox" --chromedriver-path "$CHROMEDRIVER_PATH" --chrome-path "$CHROME_PATH"
