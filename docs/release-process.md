@@ -29,7 +29,7 @@ Before Sonja merges to `main`, all of these must hold:
 - Required workflow checks pass: continuous integration, accessibility at WCAG 2.2 AAA, and security.
 - Carol has signed off functional, accessibility, and visual testing.
 - The architecture-and-security conformance check has passed.
-- For a release, Carol's release checklist is complete, including Tim's own screen-reader test.
+- For a release, Carol's release checklist is complete.
 
 Sonja merges only with Tim's express approval, given at the time. A merge is never pre-approved.
 
