@@ -408,7 +408,10 @@ _update_core() {
   local display="$3"
 
   if [ ! -f "$pfile" ]; then
-    echo "  NEW in master, not yet in this project: $display (skipping)"
+    mkdir -p "$(dirname "$pfile")"
+    cp "$tfile" "$pfile"
+    echo "  added:     $display (new agent copied from template)"
+    changed=$((changed + 1))
     return
   fi
 
