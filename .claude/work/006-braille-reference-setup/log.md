@@ -78,4 +78,27 @@ Sean completed the five-commit setup build on `chore/project-setup` on top of Ta
 
 Sonja dispatched Carol in the background to run the test pass and produce the release checklist for PR 1.
 - [2026-05-30 22:44:13] subagent completed
-- [2026-06-03 22:02:48] subagent completed
+- [2026-06-04 13:17:02] subagent completed
+- [2026-06-04 13:19:23] subagent completed
+- [2026-06-04 13:20:24] subagent completed
+
+## [2026-06-04] ci-fix | browser-actions/setup-chrome axe fix confirmed green
+
+Three runs on ci/setup-chrome-action branch to find and confirm the fix:
+
+Run 1 (26971493770) — initial browser-actions/setup-chrome:
+- Pa11y: PASS. axe: FAIL — ChromeDriver v149 vs system Chrome v148 at /opt/google/chrome/chrome.
+
+Run 2 (26972352005) — PR #79 PATH prepend approach:
+- "Add action-installed Chrome to PATH" step: PASS. Pa11y: PASS. axe: FAIL.
+- Root cause confirmed: ChromeDriver on Linux ignores PATH; uses hardcoded lookup list.
+  The action-installed Chrome directory prepended to GITHUB_PATH had no effect.
+
+Run 3 (26972689559) — --chrome-path flag (correct fix):
+- axe --chrome-path "$CHROME_PATH" calls setChromeBinaryPath() in selenium-webdriver,
+  directing ChromeDriver to the action-installed Chrome v149 explicitly.
+- Pa11y: PASS. axe: PASS. Complete job in 32 seconds.
+
+Fix applied to Braille Reference ci/setup-chrome-action (commit c1a7ea5) and
+confirmed green. AgentTeam template updated (fix/axe-chrome-path-039, commit 691ebb8).
+PR 15 ready for Tim's merge approval.
