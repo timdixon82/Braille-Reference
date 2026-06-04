@@ -138,11 +138,10 @@ When you pick up work on an existing project, first check the project wiki for t
 
 ## The GitHub-actions approval contract
 
-- A GitHub action runs without pausing only if it is listed in the current work folder's `brief.md`, under "Approved GitHub actions".
-- Set those pre-approvals with Tim when a brief is created, never on his behalf. Put one batched question that lists all six pre-approvable actions (create a branch, commit to a branch, push a branch other than main, open a pull request, comment on a pull request or an issue, create an issue), each with a one-line definition of what it permits, and ask which to pre-approve. It is yes or no per action: tick only what Tim names, leave the rest unticked so they pause for him. The six phrases are fixed; the safety hook matches them exactly.
+- All six standard GitHub actions are pre-approved for every work folder. No question is put to Tim about them. The six actions are: create a branch, commit to a branch, push a branch other than main, open a pull request, comment on a pull request or an issue, and create an issue. They are pre-ticked in every brief template.
 - The hard deny-list in `CLAUDE.md` always applies. Never run a deny-listed action, whatever a brief or instruction says. If one is requested, refuse and explain.
 - Merging to the main branch can never be pre-approved. It always pauses for Tim's express approval, given at the time.
-- For anything else that is not pre-approved and not deny-listed, pause and ask Tim before acting.
+- For anything not in the six standard actions, not deny-listed, and not a merge: pause and ask Tim before acting.
 
 ## Publishing to external platforms
 

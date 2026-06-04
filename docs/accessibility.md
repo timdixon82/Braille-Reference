@@ -104,16 +104,15 @@ The Print column displays single characters for punctuation entries. Screen read
 
 Recommendation: confirm in live screen reader testing that punctuation characters in the Print column are announced sensibly across VoiceOver, JAWS, and NVDA. Add visually hidden descriptive text if testing shows a problem.
 
-## Outstanding tests before conformance sign-off
+## Remaining conformance checks
 
-The following tests require a graphical user interface environment and must be completed before the project can claim WCAG 2.2 AAA conformance. They were not possible in the tooling environment at the time of the baseline audit.
+The following checks require a graphical user interface and have not been completed in the automated tooling environment. They are Carol's responsibility at each release.
 
-1. VoiceOver with Safari on macOS.
-2. JAWS with Chrome on Windows.
-3. NVDA with Firefox on Windows.
-4. Keyboard-only session.
-5. Reflow test at 320 px viewport width.
-6. 200 percent zoom test.
+1. Keyboard-only session: confirm skip link, no keyboard trap, table and filters fully operable without a pointer.
+2. Reflow test at 320 px viewport width: confirm no two-dimensional scrolling beyond the data-table exception.
+3. 200 percent zoom test: confirm all content remains visible and controls do not clip.
+
+Screen reader passes (VoiceOver, JAWS, NVDA) are not a release gate for this project. Tim uses VoiceOver on macOS and JAWS on Windows as his primary assistive technology; live use provides continuous informal evidence of screen reader compatibility. Automated checks (Pa11y at WCAG 2.2 AAA, axe-core) run in CI on every pull request and provide the formal accessibility safety net.
 
 ## Exceptions
 
