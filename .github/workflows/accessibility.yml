@@ -2,26 +2,24 @@
 #
 # Two complementary patterns keep the checks green across projects:
 #
-#   Tool pinning. Pa11y, @axe-core/cli, and wait-on are pinned in
-#   .github/accessibility-tools/package.json so Dependabot can track
-#   and propose version bumps automatically. They are installed via
+#   Tool pinning (template pattern). Pa11y, @axe-core/cli, and wait-on are
+#   pinned in .github/accessibility-tools/package.json so Dependabot can
+#   track and propose version bumps automatically. They are installed via
 #   npm ci against that manifest, never with npm install -g.
 #
-#   ChromeDriver matching. The Chrome for Testing CDN supplies a
-#   ChromeDriver binary whose version matches the runner's system
-#   Chrome exactly. The matching binary path is exported into
-#   GITHUB_ENV so the axe step can address it via --chromedriver-path.
-#   If the CDN download fails, axe falls back to the system ChromeDriver
-#   and a warning is printed.
+#   Chrome and ChromeDriver matching (action-based). browser-actions/setup-chrome
+#   installs a matched Chrome and ChromeDriver pair and exposes their paths as
+#   step outputs (steps.chrome.outputs.chrome-path and
+#   steps.chrome.outputs.chromedriver-path). This avoids the fragile find-based
+#   path detection of browser-driver-manager and the hardcoded CDN-URL coupling
+#   of the Chrome for Testing CDN approach. PUPPETEER_EXECUTABLE_PATH is scoped
+#   to the Pa11y step only, so Puppeteer-using tools downstream are not affected.
 #
-#   Pa11y uses its bundled Puppeteer with the system Chrome binary,
-#   pointed at via pa11y.ci.json (derived at CI time from pa11y.json).
-#   PUPPETEER_EXECUTABLE_PATH is scoped to the Pa11y step only.
+# Known limitation: the app may require JavaScript execution to render.
+# Pa11y and axe-core run against the served HTML; full rendered-interface
+# testing is Carol's responsibility in her manual test pass.
 #
-# Security note: no untrusted GitHub context variables are used in any
-# run step. All run commands are fixed strings.
-#
-# Action versions are pinned to commit SHAs verified on 2026-05-23.
+# Action versions are pinned to commit SHAs. Update via Dependabot.
 
 name: Accessibility
 on:
@@ -52,40 +50,11 @@ jobs:
       - name: Add accessibility tools to PATH
         run: echo "$GITHUB_WORKSPACE/.github/accessibility-tools/node_modules/.bin" >> "$GITHUB_PATH"
 
-      - name: Install matching ChromeDriver for axe-core
-        run: |
-          # Detect the full Chrome version from the binary ChromeDriver uses.
-          # Probe in the same order ChromeDriver checks for binaries.
-          CHROME_FULL=""
-          for chrome_bin in /opt/google/chrome/chrome /opt/google/chrome/google-chrome \
-              /usr/bin/google-chrome /usr/bin/google-chrome-stable; do
-            if [ -x "$chrome_bin" ]; then
-              CHROME_FULL=$("$chrome_bin" --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-              break
-            fi
-          done
-          if [ -z "$CHROME_FULL" ]; then
-            echo "WARNING: Could not detect Chrome version; axe will use system ChromeDriver."
-            exit 0
-          fi
-          echo "Detected Chrome ${CHROME_FULL}."
-          mkdir -p "$HOME/chromedriver-matching"
-          if curl -sfL \
-              "https://storage.googleapis.com/chrome-for-testing-public/${CHROME_FULL}/linux64/chromedriver-linux64.zip" \
-              -o /tmp/chromedriver.zip; then
-            unzip -q /tmp/chromedriver.zip -d /tmp/chromedriver-extract
-            install -m 0755 /tmp/chromedriver-extract/chromedriver-linux64/chromedriver \
-              "$HOME/chromedriver-matching/chromedriver"
-            echo "CHROMEDRIVER_PATH=$HOME/chromedriver-matching/chromedriver" >> "$GITHUB_ENV"
-            echo "Installed ChromeDriver ${CHROME_FULL}."
-          else
-            echo "WARNING: CDN download failed; axe will use system ChromeDriver."
-          fi
-
-      - name: Build CI pa11y config with system Chrome path
-        run: |
-          CHROME=$(which google-chrome-stable 2>/dev/null || which google-chrome 2>/dev/null || which chromium 2>/dev/null)
-          jq --arg chrome "$CHROME" '.chromeLaunchConfig.executablePath = $chrome' pa11y.json > pa11y.ci.json
+      - name: Set up Chrome and ChromeDriver
+        id: chrome
+        uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd  # v2.1.2
+        with:
+          install-chromedriver: true
 
       - name: Serve the site in the background
         run: python3 -m http.server 8080 &
@@ -94,12 +63,9 @@ jobs:
         run: wait-on http://localhost:8080 --timeout 15000
 
       - name: Pa11y on index.html at WCAG 2.2 AAA
-        run: pa11y --standard WCAG2AAA --config pa11y.ci.json http://localhost:8080/index.html
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: pa11y --standard WCAG2AAA http://localhost:8080/index.html
 
       - name: axe-core on index.html at WCAG 2.2 AAA
-        run: |
-          if [ -n "${CHROMEDRIVER_PATH:-}" ]; then
-            axe http://localhost:8080/index.html --tags wcag2a,wcag2aa,wcag2aaa,wcag22aa,wcag22aaa --chrome-options=no-sandbox --chromedriver-path "$CHROMEDRIVER_PATH"
-          else
-            axe http://localhost:8080/index.html --tags wcag2a,wcag2aa,wcag2aaa,wcag22aa,wcag22aaa --chrome-options=no-sandbox
-          fi
+        run: axe http://localhost:8080/index.html --tags wcag2a,wcag2aa,wcag2aaa,wcag22aa,wcag22aaa --chrome-options="no-sandbox" --chromedriver-path "${{ steps.chrome.outputs.chromedriver-path }}"
