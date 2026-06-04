@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.1](https://github.com/timdixon82/Braille-Reference/compare/v0.2.0...v0.2.1) (2026-06-04)
+
+
+### Bug Fixes
+
+* **ci:** switch deploy workflow to unbundled static-site mode ([43a6aa8](https://github.com/timdixon82/Braille-Reference/commit/43a6aa8040910ec6e2e52d58953b7f13293c86ce))
+* **ci:** switch deploy workflow to unbundled static-site mode ([43a6aa8](https://github.com/timdixon82/Braille-Reference/commit/43a6aa8040910ec6e2e52d58953b7f13293c86ce))
+* **ci:** switch deploy workflow to unbundled static-site mode ([e9a0170](https://github.com/timdixon82/Braille-Reference/commit/e9a0170ca230ca751e7a026802009279bb2367ef))
+
 ## [0.2.0](https://github.com/timdixon82/Braille-Reference/compare/v0.1.0...v0.2.0) (2026-06-04)
 
 
