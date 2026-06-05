@@ -8,9 +8,11 @@
     "lint:html": "html-validate index.html",
     "lint:css": "stylelint --allow-empty-input \"css/**/*.css\"",
     "lint:js": "eslint --no-error-on-unmatched-pattern \"js/**/*.js\"",
-    "lint": "npm run lint:html && npm run lint:css && npm run lint:js"
+    "lint": "npm run lint:html && npm run lint:css && npm run lint:js",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "eslint": "^9.26.0",
     "globals": "^16.0.0",
     "html-validate": "^11.2.0",
