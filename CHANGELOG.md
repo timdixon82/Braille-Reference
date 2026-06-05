@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/timdixon82/Braille-Reference/compare/v0.2.1...v0.3.0) (2026-06-05)
+
+
+### Features
+
+* **tests:** add Playwright end-to-end test suite (79 tests, all passing) ([#19](https://github.com/timdixon82/Braille-Reference/issues/19)) ([2d62727](https://github.com/timdixon82/Braille-Reference/commit/2d627273ac124fd266516b94e2f3087a57743929))
+
 ## [0.2.1](https://github.com/timdixon82/Braille-Reference/compare/v0.2.0...v0.2.1) (2026-06-04)
 
 
