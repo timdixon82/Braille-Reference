@@ -16,9 +16,13 @@ Small feature.
 
 - Redesigning the layout or any component.
 - Changing heading levels, copy, or braille data.
-- Adding a visible theme-switcher UI (the four themes are available to users via OS preference and localStorage; a switcher control is a separate piece of work).
 - Modifying the GoatCounter analytics integration.
 - Any change to the Playwright test suite beyond confirming tests still pass after the token migration.
+
+## In scope (updated 2026-06-08 — Tim's direction)
+
+- **Use Roboto throughout.** Remove the Georgia body-font override. The page must use `var(--font-sans)` (Roboto) as the design system intends.
+- **Add a visible four-theme selector.** A user-facing control must appear on the page so users can choose between Light, Dark, Muted Light, and Muted Dark. The selector must be fully keyboard-accessible and correctly labelled for screen readers. It must call `window.tdTheme.set(name)` to apply and persist the chosen theme.
 
 ## Risk and rollback
 
@@ -36,7 +40,9 @@ Small feature.
 - `theme.js` is the first script in `<head>`, before any `<link rel="stylesheet">`.
 - The inline `:root` block in `index.html` is removed or reduced to project-specific overrides only. All colour and type references use design system tokens (`--accent`, `--warm`, `--fg`, `--fg-muted`, `--bg`, `--border`, etc.).
 - No old hardcoded hex values from the pre-design-system palette remain in `*.css`, `*.html`, or `*.js` files (excluding `node_modules`).
-- Carol signs off: four-theme switching works, WCAG 2.2 AAA passes in all four themes, Roboto loads from the project fonts folder, no layout regressions.
+- Body font is Roboto (via `var(--font-sans)`); no Georgia override remains.
+- A visible theme selector is present on the page with four options (Light, Dark, Muted Light, Muted Dark), fully keyboard-accessible, and correctly labelled for screen readers.
+- Carol signs off: four-theme switching works via the selector, WCAG 2.2 AAA passes in all four themes, Roboto loads from the project fonts folder, no layout regressions.
 
 ## Pre-approved GitHub actions
 
