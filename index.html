@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
+<script src="assets/js/theme.js"></script>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self' https://data.goatcounter.com; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UEB Braille Reference — Interactive Table</title>
+<link rel="stylesheet" href="assets/css/colors_and_type.css">
 <style>
   :root {
-    --navy: #0A2342;
-    --orange: #FF6F00;
-    --bg: #FFFFFF;
-    --ink: #0A2342;
-    --muted: #4A5568;
-    --rule: #767676;
-    --highlight: #FFF9F0;
-    --focus: #0A2342;
+    /* Project aliases — map local names to design system tokens */
+    --navy:      var(--accent);
+    --orange:    var(--warm);
+    --ink:       var(--fg);
+    --muted:     var(--fg-muted);
+    --rule:      var(--neutral);
+    --highlight: var(--accent-subtle);
+    --focus:     var(--accent);
+    /* --bg and --bg-card are already defined by colors_and_type.css */
   }
   * { box-sizing: border-box; }
   html { font-size: 100%; }
   body {
-    font-family: Georgia, "Times New Roman", serif;
     color: var(--ink);
     background: var(--bg);
     line-height: 1.55;
@@ -41,7 +43,7 @@
   }
   .skip-link:focus {
     position: static; width: auto; height: auto;
-    padding: 0.5rem 0.75rem; background: var(--navy); color: #fff;
+    padding: 0.5rem 0.75rem; background: var(--navy); color: var(--accent-text);
     display: inline-block; margin-bottom: 0.5rem;
   }
 
@@ -57,7 +59,7 @@
     border: 2px solid var(--rule);
     border-radius: 6px;
     padding: 1rem 1.25rem;
-    background: #fafbfc;
+    background: var(--bg);
     margin-bottom: 1rem;
   }
   fieldset {
@@ -99,7 +101,7 @@
     border: 2px solid var(--rule);
     border-radius: 4px;
     font-family: inherit;
-    background: #fff;
+    background: var(--bg-card);
     color: var(--ink);
   }
   input[type="search"]:focus, input[type="text"]:focus {
@@ -112,7 +114,7 @@
     padding: 0.5rem 0.875rem;
     border: 2px solid var(--navy);
     background: var(--navy);
-    color: #fff;
+    color: var(--accent-text);
     border-radius: 4px;
     cursor: pointer;
     font-family: inherit;
@@ -122,7 +124,7 @@
     outline-offset: 2px;
   }
   button.secondary {
-    background: #fff;
+    background: var(--bg-card);
     color: var(--navy);
   }
 
@@ -157,11 +159,11 @@
   }
   thead th {
     background: var(--navy);
-    color: #fff;
+    color: var(--accent-text);
     border-bottom: 2px solid var(--navy);
     position: sticky; top: 0;
   }
-  tbody tr:nth-child(even) { background: #f7f9fb; }
+  tbody tr:nth-child(even) { background: var(--neutral-bg); }
   tbody tr:focus-within { background: var(--highlight); outline: 2px solid var(--focus); }
 
   .braille-glyph {
@@ -179,7 +181,7 @@
     padding: 0.125rem 0.5rem;
     border-radius: 3px;
     font-size: 0.8125rem;
-    background: #e6eaf0;
+    background: var(--neutral-bg);
     color: var(--navy);
     white-space: nowrap;
   }
@@ -190,7 +192,7 @@
     border-radius: 4px;
     padding: 0.5rem 0.875rem;
     margin: 1rem 0;
-    background: #fafbfc;
+    background: var(--bg);
   }
   details summary {
     font-weight: bold; cursor: pointer; color: var(--navy);
@@ -216,6 +218,31 @@
     outline: 3px solid var(--focus);
     outline-offset: 2px;
   }
+
+  /* Theme selector */
+  .theme-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+  .theme-selector label {
+    font-weight: bold;
+    color: var(--navy);
+    white-space: nowrap;
+  }
+  .theme-selector select {
+    background: var(--bg-card);
+    color: var(--fg);
+    border: 2px solid var(--accent);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0 0.625rem;
+    min-height: var(--hit);
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -224,6 +251,15 @@
     <header>
       <h1>UEB Braille Reference</h1>
       <p class="lede">An interactive reference for the Unified English Braille (UEB) alphabet, numbers, punctuation, and Grade 2 contractions. Filter by grade and category, search by letter, word, or by dot pattern.</p>
+      <div class="theme-selector">
+        <label for="theme-select">Colour theme</label>
+        <select id="theme-select" aria-label="Choose colour theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="muted-light">Muted Light</option>
+          <option value="muted-dark">Muted Dark</option>
+        </select>
+      </div>
     </header>
 
     <main id="main">
@@ -794,5 +830,15 @@
   data-goatcounter="https://timdixon82.goatcounter.com/count"
   async
   src="./assets/analytics/count.js"></script>
+<script>
+  (function () {
+    var sel = document.getElementById('theme-select');
+    if (!sel) return;
+    sel.value = document.documentElement.dataset.theme || 'light';
+    sel.addEventListener('change', function () {
+      window.tdTheme.set(sel.value);
+    });
+  }());
+</script>
 </body>
 </html>
