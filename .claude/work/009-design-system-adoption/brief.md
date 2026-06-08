@@ -6,7 +6,7 @@ Adopt the June 2026 Tim Dixon Design System in the Braille-Reference project. Th
 
 ## Status
 
-Status: active
+Status: done
 
 ## Triage type
 

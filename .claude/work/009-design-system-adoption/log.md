@@ -13,4 +13,8 @@ Tim directed that the brief's Georgia-font carve-out and no-theme-switcher restr
 
 ## [2026-06-08] review | Carol sign-off — PASS
 
-All 12 checks pass. WCAG 1.4.11 border contrast: 6.83:1 to 9.57:1 across all four themes. Roboto loading confirmed. Theme selector keyboard-accessible and screen-reader labelled. 79/79 Playwright tests green. Pa11y: no issues. Awaiting Tim's approval to merge PR 23.
+All 12 checks pass. WCAG 1.4.11 border contrast: 6.83:1 to 9.57:1 across all four themes. Roboto loading confirmed. Theme selector keyboard-accessible and screen-reader labelled. 79/79 Playwright tests green. Pa11y: no issues.
+
+## [2026-06-08] done | PR 23 merged on Tim's approval
+
+PR 23 merged to main. Work folder status: done.
