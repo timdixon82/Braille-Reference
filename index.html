@@ -23,7 +23,6 @@
   * { box-sizing: border-box; }
   html { font-size: 100%; }
   body {
-    font-family: Georgia, "Times New Roman", serif;
     color: var(--ink);
     background: var(--bg);
     line-height: 1.55;
@@ -219,6 +218,31 @@
     outline: 3px solid var(--focus);
     outline-offset: 2px;
   }
+
+  /* Theme selector */
+  .theme-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+  .theme-selector label {
+    font-weight: bold;
+    color: var(--navy);
+    white-space: nowrap;
+  }
+  .theme-selector select {
+    background: var(--bg-card);
+    color: var(--fg);
+    border: 2px solid var(--accent);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0 0.625rem;
+    min-height: var(--hit);
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -227,6 +251,15 @@
     <header>
       <h1>UEB Braille Reference</h1>
       <p class="lede">An interactive reference for the Unified English Braille (UEB) alphabet, numbers, punctuation, and Grade 2 contractions. Filter by grade and category, search by letter, word, or by dot pattern.</p>
+      <div class="theme-selector">
+        <label for="theme-select">Colour theme</label>
+        <select id="theme-select" aria-label="Choose colour theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="muted-light">Muted Light</option>
+          <option value="muted-dark">Muted Dark</option>
+        </select>
+      </div>
     </header>
 
     <main id="main">
@@ -797,5 +830,15 @@
   data-goatcounter="https://timdixon82.goatcounter.com/count"
   async
   src="./assets/analytics/count.js"></script>
+<script>
+  (function () {
+    var sel = document.getElementById('theme-select');
+    if (!sel) return;
+    sel.value = document.documentElement.dataset.theme || 'light';
+    sel.addEventListener('change', function () {
+      window.tdTheme.set(sel.value);
+    });
+  }());
+</script>
 </body>
 </html>
