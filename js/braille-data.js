@@ -5,11 +5,10 @@
 // mapping and lookup functions can be unit tested in isolation. This
 // is a minimal, behaviour-preserving extraction of the data set and
 // the DOM-free helper functions only; the rendering, filtering, and
-// event-wiring code stays inline in index.html for now. It is a
-// partial step toward the full split recommended in
-// docs/decisions/001-single-file-structure.md, not the full split
-// itself — see that record and the note in the pull request that
-// introduced this file.
+// event-wiring code stays inline in index.html for now. It is step 1
+// of the incremental multi-file structure accepted in
+// docs/decisions/005-incremental-multi-file-structure.md — see that
+// record and the note in the pull request that introduced this file.
 //
 // Each data entry: { print, cells, category, notes, grade }
 // grade: 1 = shown in both grades; 2 = shown in Grade 2 only

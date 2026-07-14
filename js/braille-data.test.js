@@ -10,14 +10,15 @@
 //      set of dots, independently of dotsToChar's own implementation.
 //   2. The standard Grade 1 (uncontracted) UEB alphabet, digits, and
 //      common punctuation, and the standard Grade 2 (contracted) strong
-//      wordsigns, strong groupsigns, and alphabetic wordsigns. These are
-//      well-established, widely published mappings, cross-checked here
-//      against the Unicode reference in (1) above and against generally
-//      known UEB reference material.
-//
-// A small number of entries in js/braille-data.js are NOT independently
-// verified here — see the "UNVERIFIED MAPPINGS" block near the bottom of
-// this file. Do not add assertions for those without a checked reference.
+//      wordsigns, strong groupsigns, alphabetic wordsigns, round-bracket
+//      punctuation, and the lower, initial-letter, final-letter, and
+//      shortform categories. These are well-established, widely published
+//      mappings, cross-checked here against the Unicode reference in (1)
+//      above and against generally known UEB reference material. The
+//      round-bracket and Grade 2 lower/initial-letter/final-letter/
+//      shortform entries were verified against the Braille Authority of
+//      North America (BANA) Appendix 1 and the ICEB Rules of Unified
+//      English Braille, Third Edition 2024 (Tad's verification, work 050).
 
 import { describe, it, expect } from 'vitest';
 import {
@@ -352,29 +353,153 @@ describe('cellsContain: dot-pattern search matching', () => {
   });
 });
 
-// ============================================================
-// UNVERIFIED MAPPINGS — flagged, not asserted
-// ============================================================
-// The following categories in js/braille-data.js are NOT independently
-// verified against a checked UEB reference in this test file, and are
-// deliberately left untested rather than asserted against a guess:
-//
-//   - Punctuation: the two-cell round bracket sequences for "(" and ")"
-//     ([[5],[1,2,6]] and [[5],[3,4,5]]). The single-cell UEB punctuation
-//     above is well established; the exact two-cell bracket sequence is
-//     not something this test author could confirm independently.
-//   - category: "lower" (be, were, his, was, enough, in, con, dis, ea,
-//     bb, cc, ff, gg) — UEB lower wordsigns/groupsigns.
-//   - category: "initial-letter" (day, ever, father, here, know, lord,
-//     mother, name, one, part, question, right, some, time, under, work,
-//     young, there, character, through, where, ought, upon, these, those,
-//     whose, word, cannot, had, many, spirit, their, world).
-//   - category: "final-letter" (ound, ance, sion, less, ount, ence, ong,
-//     ful, tion, ness, ment, ity).
-//   - category: "shortform" (about, above, according, after, again,
-//     because, before, between, could, friend, good, letter, little,
-//     said, should, would, your).
-//
-// Recommendation: route these entries to Tad for verification against a
-// canonical UEB rulebook or the Braille Authority of North America (BANA)
-// UEB reference, then add assertions for them in a follow-up.
+describe('Round-bracket punctuation: known-correct UEB dot patterns', () => {
+  // Reference: Tad's UEB verification (work 050), cross-checked against
+  // the BANA Appendix 1 "Braille Symbols and Indicators" (rule 7) and the
+  // ICEB Rules of Unified English Braille, Third Edition 2024, section 7.
+  // Round brackets always use this two-cell dot-5-prefix form; there is
+  // no context-dependent variant, so a bare "(" or ")" is a valid case.
+  it('maps "(" (opening round bracket) to dot 5 then dots 1, 2, 6', () => {
+    expect(findEntry('(', 'punctuation').cells).toEqual([[5], [1, 2, 6]]);
+  });
+
+  it('maps ")" (closing round bracket) to dot 5 then dots 3, 4, 5', () => {
+    expect(findEntry(')', 'punctuation').cells).toEqual([[5], [3, 4, 5]]);
+  });
+});
+
+describe('Grade 2 lower wordsigns and groupsigns: known-correct UEB dot patterns', () => {
+  // Reference: Tad's UEB verification (work 050), cross-checked against
+  // BANA Appendix 1 rule-10.5/10.6 entries and ICEB Rules of UEB section
+  // 10. Lower signs are drawn only from dots 2, 3, 5, 6.
+  const knownLowerSigns = [
+    { print: 'be', dots: [2, 3] },
+    { print: 'were', dots: [2, 3, 5, 6] },
+    { print: 'his', dots: [2, 3, 6] },
+    { print: 'was', dots: [3, 5, 6] },
+    { print: 'enough', dots: [2, 6] },
+    { print: 'in', dots: [3, 5] },
+    { print: 'con', dots: [2, 5] },
+    { print: 'dis', dots: [2, 5, 6] },
+    { print: 'ea', dots: [2] },
+    { print: 'bb', dots: [2, 3] },
+    { print: 'cc', dots: [2, 5] },
+    { print: 'ff', dots: [2, 3, 5] },
+    { print: 'gg', dots: [2, 3, 5, 6] },
+  ];
+
+  for (const { print, dots } of knownLowerSigns) {
+    it(`maps "${print}" to dots ${dots.join(',')}`, () => {
+      const entry = findEntry(print, 'lower');
+      expect(entry.cells).toEqual([dots]);
+    });
+  }
+});
+
+describe('Grade 2 initial-letter contractions: known-correct UEB dot patterns', () => {
+  // Reference: Tad's UEB verification (work 050), cross-checked against
+  // BANA Appendix 1 rule-10.7 entries and ICEB Rules of UEB section 10.
+  // Each is a fixed two-cell contraction: a prefix cell (dot 5, dots 4-5,
+  // or dots 4-5-6) followed by a letter or lower-level contraction cell.
+  const knownInitialLetterSigns = [
+    { print: 'day', cells: [[5], [1, 4, 5]] },
+    { print: 'ever', cells: [[5], [1, 5]] },
+    { print: 'father', cells: [[5], [1, 2, 4]] },
+    { print: 'here', cells: [[5], [1, 2, 5]] },
+    { print: 'know', cells: [[5], [1, 3]] },
+    { print: 'lord', cells: [[5], [1, 2, 3]] },
+    { print: 'mother', cells: [[5], [1, 3, 4]] },
+    { print: 'name', cells: [[5], [1, 3, 4, 5]] },
+    { print: 'one', cells: [[5], [1, 3, 5]] },
+    { print: 'part', cells: [[5], [1, 2, 3, 4]] },
+    { print: 'question', cells: [[5], [1, 2, 3, 4, 5]] },
+    { print: 'right', cells: [[5], [1, 2, 3, 5]] },
+    { print: 'some', cells: [[5], [2, 3, 4]] },
+    { print: 'time', cells: [[5], [2, 3, 4, 5]] },
+    { print: 'under', cells: [[5], [1, 3, 6]] },
+    { print: 'work', cells: [[5], [2, 4, 5, 6]] },
+    { print: 'young', cells: [[5], [1, 3, 4, 5, 6]] },
+    { print: 'there', cells: [[5], [2, 3, 4, 6]] },
+    { print: 'character', cells: [[5], [1, 6]] },
+    { print: 'through', cells: [[5], [1, 4, 5, 6]] },
+    { print: 'where', cells: [[5], [1, 5, 6]] },
+    { print: 'ought', cells: [[5], [1, 2, 5, 6]] },
+    { print: 'upon', cells: [[4, 5], [1, 3, 6]] },
+    { print: 'these', cells: [[4, 5], [2, 3, 4, 6]] },
+    { print: 'those', cells: [[4, 5], [1, 4, 5, 6]] },
+    { print: 'whose', cells: [[4, 5], [1, 5, 6]] },
+    { print: 'word', cells: [[4, 5], [2, 4, 5, 6]] },
+    { print: 'cannot', cells: [[4, 5, 6], [1, 4]] },
+    { print: 'had', cells: [[4, 5, 6], [1, 2, 5]] },
+    { print: 'many', cells: [[4, 5, 6], [1, 3, 4]] },
+    { print: 'spirit', cells: [[4, 5, 6], [2, 3, 4]] },
+    { print: 'their', cells: [[4, 5, 6], [2, 3, 4, 5]] },
+    { print: 'world', cells: [[4, 5, 6], [2, 4, 5, 6]] },
+  ];
+
+  for (const { print, cells } of knownInitialLetterSigns) {
+    it(`maps "${print}" to its verified initial-letter cells`, () => {
+      expect(findEntry(print, 'initial-letter').cells).toEqual(cells);
+    });
+  }
+});
+
+describe('Grade 2 final-letter contractions: known-correct UEB dot patterns', () => {
+  // Reference: Tad's UEB verification (work 050), cross-checked against
+  // BANA Appendix 1 rule-10.8 entries and ICEB Rules of UEB section 10.
+  // Each is a two-cell contraction: a prefix cell (dots 4-6 or dots 5-6)
+  // followed by a letter cell, valid only as a word-final letter group
+  // (e.g. "found", "balance", "version" — not mid-word or word-initial).
+  const knownFinalLetterSigns = [
+    { print: 'ound', cells: [[4, 6], [1, 4, 5]] },
+    { print: 'ance', cells: [[4, 6], [1, 5]] },
+    { print: 'sion', cells: [[4, 6], [1, 3, 4, 5]] },
+    { print: 'less', cells: [[4, 6], [2, 3, 4]] },
+    { print: 'ount', cells: [[4, 6], [2, 3, 4, 5]] },
+    { print: 'ence', cells: [[5, 6], [1, 5]] },
+    { print: 'ong', cells: [[5, 6], [1, 2, 4, 5]] },
+    { print: 'ful', cells: [[5, 6], [1, 2, 3]] },
+    { print: 'tion', cells: [[5, 6], [1, 3, 4, 5]] },
+    { print: 'ness', cells: [[5, 6], [2, 3, 4]] },
+    { print: 'ment', cells: [[5, 6], [2, 3, 4, 5]] },
+    { print: 'ity', cells: [[5, 6], [1, 3, 4, 5, 6]] },
+  ];
+
+  for (const { print, cells } of knownFinalLetterSigns) {
+    it(`maps "${print}" to its verified final-letter cells`, () => {
+      expect(findEntry(print, 'final-letter').cells).toEqual(cells);
+    });
+  }
+});
+
+describe('Grade 2 shortforms: known-correct UEB dot patterns', () => {
+  // Reference: Tad's UEB verification (work 050), cross-checked against
+  // BANA Appendix 1 rule-10.9 entries and ICEB Rules of UEB section 10.
+  // Each shortform is a fixed abbreviation built from letter or lower-sign
+  // cells; the base word itself is the safe, unambiguous test case.
+  const knownShortforms = [
+    { print: 'about', cells: [[1], [1, 2]] },
+    { print: 'above', cells: [[1], [1, 2], [1, 2, 3, 6]] },
+    { print: 'according', cells: [[1], [1, 4]] },
+    { print: 'after', cells: [[1], [1, 2, 4]] },
+    { print: 'again', cells: [[1], [1, 2, 4, 5]] },
+    { print: 'because', cells: [[2, 3], [1, 4]] },
+    { print: 'before', cells: [[2, 3], [1, 2, 4]] },
+    { print: 'between', cells: [[2, 3], [2, 3, 4, 5]] },
+    { print: 'could', cells: [[1, 4], [1, 4, 5]] },
+    { print: 'friend', cells: [[1, 2, 4], [1, 2, 3, 5]] },
+    { print: 'good', cells: [[1, 2, 4, 5], [1, 4, 5]] },
+    { print: 'letter', cells: [[1, 2, 3], [1, 2, 3, 5]] },
+    { print: 'little', cells: [[1, 2, 3], [1, 2, 3]] },
+    { print: 'said', cells: [[2, 3, 4], [1, 4, 5]] },
+    { print: 'should', cells: [[1, 4, 6], [1, 4, 5]] },
+    { print: 'would', cells: [[2, 4, 5, 6], [1, 4, 5]] },
+    { print: 'your', cells: [[1, 3, 4, 5, 6], [1, 2, 3, 5]] },
+  ];
+
+  for (const { print, cells } of knownShortforms) {
+    it(`maps "${print}" to its verified shortform cells`, () => {
+      expect(findEntry(print, 'shortform').cells).toEqual(cells);
+    });
+  }
+});

@@ -182,7 +182,7 @@
     border-radius: 3px;
     font-size: 0.8125rem;
     background: var(--neutral-bg);
-    color: var(--navy);
+    color: var(--ink);
     white-space: nowrap;
   }
 
@@ -374,8 +374,9 @@
   // The UEB braille data set and the DOM-free conversion helpers below
   // live in js/braille-data.js, extracted from this inline script so
   // they can be unit tested in isolation (see js/braille-data.test.js).
-  // See docs/decisions/001-single-file-structure.md for the file-split
-  // context: this is a minimal, partial step, not the full split.
+  // See docs/decisions/005-incremental-multi-file-structure.md for the
+  // file-split context: this is step 1 of an incremental split, not a
+  // single-pass split.
   import {
     data,
     cellsToBraille,
