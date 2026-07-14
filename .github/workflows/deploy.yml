@@ -67,7 +67,54 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        # --if-present no-ops: this project's package.json is for tooling
+        # (lint, test) only, with no "build" script (see the no-build ADR
+        # in docs/decisions/). Without --if-present, npm exits non-zero
+        # with "Missing script: build" and the deploy fails.
+        run: npm run build --if-present
+
+      - name: Assemble the deploy artifact
+        # This project has no build step, so dist/ never gets created.
+        # Uploading the repository root as-is would publish node_modules
+        # (npm ci already ran above), tooling config, docs, and agent
+        # working files, so this assembles a _site/ folder with the
+        # runtime files only (index.html, assets/, js/) and uploads that
+        # instead. If a future build step is added, dist/ gets uploaded
+        # as normal.
+        id: artifact
+        run: |
+          if [ -d dist ]; then
+            echo "path=dist" >> "$GITHUB_OUTPUT"
+          else
+            mkdir _site
+            rsync -av \
+              --exclude='_site' \
+              --exclude='node_modules' \
+              --exclude='.github' \
+              --exclude='.claude' \
+              --exclude='docs' \
+              --exclude='scripts' \
+              --exclude='tests' \
+              --exclude='package.json' \
+              --exclude='package-lock.json' \
+              --exclude='eslint.config.js' \
+              --exclude='.stylelintrc.json' \
+              --exclude='.htmlvalidate.json' \
+              --exclude='playwright.config.js' \
+              --exclude='vitest.config.js' \
+              --exclude='pa11y.json' \
+              --exclude='release-please-config.json' \
+              --exclude='.release-please-manifest.json' \
+              --exclude='.editorconfig' \
+              --exclude='.gitignore' \
+              --exclude='CLAUDE.md' \
+              --exclude='CHANGELOG.md' \
+              --exclude='README.md' \
+              --exclude='todo.md' \
+              --exclude='VERSION' \
+              . _site/
+            echo "path=_site" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d  # v6.0.0
@@ -75,7 +122,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9  # v5.0.0
         with:
-          path: dist   # change to your build output folder if different
+          path: ${{ steps.artifact.outputs.path }}
 
   deploy:
     needs: build
