@@ -35,6 +35,7 @@ Architecture Decision Records, numbered in the order Jacob proposed them during 
 Recorded accessibility and security exceptions. The GitHub Pages security-header exception is covered by the team's standing exception, approved by Tim on 2026-05-23.
 
 - [GitHub Pages security-header gap](exceptions/github-pages-headers.md): pointer to the team's standing exception in the global wiki.
+- [pa11y alpha-compositing false positive on #status](exceptions/pa11y-alpha-compositing-status.md): confirmed pa11y engine limitation on a semi-transparent background, not a real contrast defect. axe-core confirms conformance.
 
 ## Operations
 

@@ -2,7 +2,10 @@
 
 ## Status
 
-Accepted. Proposed by Jacob (architect) on 2026-05-21, during work 006-braille-reference-setup. Accepted under the team's standing standard in [AgentTeam global wiki: decisions/006-adopted-static-project-standards.md](../../../AgentTeam/docs/decisions/006-adopted-static-project-standards.md), standard 1, which applies to every adopted static front-end project.
+- State: Superseded
+- Decided: 2026-05-21
+- Supersedes: None
+- Superseded by: 005
 
 ## Context
 
