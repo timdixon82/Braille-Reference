@@ -78,41 +78,43 @@ jobs:
         # Uploading the repository root as-is would publish node_modules
         # (npm ci already ran above), tooling config, docs, and agent
         # working files, so this assembles a _site/ folder with the
-        # runtime files only (index.html, assets/, js/) and uploads that
-        # instead. If a future build step is added, dist/ gets uploaded
-        # as normal.
+        # runtime files only.
+        #
+        # This is a fail-safe ALLOW-list, not a deny-list: only paths
+        # matching an explicit --include line below are copied into
+        # _site/. Everything else is excluded by the trailing
+        # --exclude='*'. A file nobody thought to exclude is therefore
+        # NOT published by default — the opposite of a deny-list, where a
+        # forgotten exclude ships an unknown file to a public Pages URL.
+        # This project's runtime is index.html, assets/, and js/. The
+        # *.test.js exclude drops js/braille-data.test.js — a unit test
+        # file that lives alongside the runtime module but is never
+        # loaded by index.html, so it has no place on the public site.
+        #
+        # Every include below (other than the '*/' descend-only pattern)
+        # carries a leading '/' to anchor it to the repo root. An rsync
+        # include that contains a '/' but has NO leading '/' is NOT
+        # anchored — it matches at any depth, not just the root. Because
+        # npm ci runs before this step, an unanchored 'js/***' would also
+        # match nested node_modules paths, silently publishing
+        # node_modules internals to the public site.
         id: artifact
         run: |
           if [ -d dist ]; then
             echo "path=dist" >> "$GITHUB_OUTPUT"
           else
             mkdir _site
-            rsync -av \
-              --exclude='_site' \
-              --exclude='node_modules' \
-              --exclude='.github' \
-              --exclude='.claude' \
-              --exclude='docs' \
-              --exclude='scripts' \
-              --exclude='tests' \
-              --exclude='package.json' \
-              --exclude='package-lock.json' \
-              --exclude='eslint.config.js' \
-              --exclude='.stylelintrc.json' \
-              --exclude='.htmlvalidate.json' \
-              --exclude='playwright.config.js' \
-              --exclude='vitest.config.js' \
-              --exclude='pa11y.json' \
-              --exclude='release-please-config.json' \
-              --exclude='.release-please-manifest.json' \
-              --exclude='.editorconfig' \
-              --exclude='.gitignore' \
-              --exclude='CLAUDE.md' \
-              --exclude='CHANGELOG.md' \
-              --exclude='README.md' \
-              --exclude='todo.md' \
-              --exclude='VERSION' \
-              . _site/
+            # The allow-listed paths below (assets/, js/, index.html) are
+            # published to the public site: never put a secret or other
+            # non-public file in any of them.
+            rsync -a --prune-empty-dirs --safe-links \
+                     --include='/index.html' \
+                     --include='/assets/***' \
+                     --exclude='*.test.js' \
+                     --include='/js/***' \
+                     --include='*/' \
+                     --exclude='*' \
+                     ./ _site/
             echo "path=_site" >> "$GITHUB_OUTPUT"
           fi
 
