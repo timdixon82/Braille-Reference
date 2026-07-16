@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/timdixon82/Braille-Reference/compare/v0.3.0...v0.4.0) (2026-07-16)
+
+
+### Features
+
+* adopt June 2026 Tim Dixon Design System ([401f1a1](https://github.com/timdixon82/Braille-Reference/commit/401f1a1552245dce99c8f76234b40cb117d3faf9))
+* adopt June 2026 Tim Dixon Design System ([dadeae3](https://github.com/timdixon82/Braille-Reference/commit/dadeae3b6f947fb68cb835c7367846acbbb8c55a))
+* **design+a11y:** remove Georgia override and add four-theme selector ([cc5914c](https://github.com/timdixon82/Braille-Reference/commit/cc5914c1f3fabdf061992f2e7f743c75b9b56ea3))
+
+
+### Bug Fixes
+
+* **a11y:** use --neutral for interactive borders, not --border (WCAG 1.4.11) ([2478bc8](https://github.com/timdixon82/Braille-Reference/commit/2478bc88e48c934106d665df0d42692ed1da7d68))
+
 ## [0.3.0](https://github.com/timdixon82/Braille-Reference/compare/v0.2.1...v0.3.0) (2026-06-05)
 
 
