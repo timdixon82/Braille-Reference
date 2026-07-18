@@ -8,7 +8,7 @@ Carol flagged Playwright functional tests as a medium-priority open item after t
 
 ## Status
 
-Status: active
+Status: done
 
 ## Mockup mode
 
