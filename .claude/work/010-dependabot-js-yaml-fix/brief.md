@@ -11,7 +11,7 @@ form-data, all in `.github/accessibility-tools/package-lock.json`) were
 already resolved automatically by the 2026-07-18 template sync and need no
 further action.
 
-- Status: active
+- Status: done
 - Branch: sean/fix-js-yaml-dependabot
 - Mockup mode: D — no mockup needed; this is a lockfile-only dependency bump
 - Priority: 3
@@ -52,11 +52,11 @@ other files change.
 
 ## Definition of done
 
-- [ ] `js-yaml` in the root `package-lock.json` is at 4.2.0 or later
-- [ ] `npm run lint` passes
-- [ ] `npm test` passes
-- [ ] CI is green on the pull request
-- [ ] Dependabot alert #4 shows as fixed after merge
+- [x] `js-yaml` in the root `package-lock.json` is at 4.2.0 or later
+- [x] `npm run lint` passes
+- [x] `npm test` passes
+- [x] CI is green on the pull request
+- [x] Dependabot alert #4 shows as fixed after merge
 
 ## Approved GitHub actions
 
