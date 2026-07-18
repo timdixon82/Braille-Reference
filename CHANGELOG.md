@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/timdixon82/Braille-Reference/compare/v0.4.0...v0.4.1) (2026-07-18)
+
+
+### Bug Fixes
+
+* **deps:** bump js-yaml to 4.3.0 to resolve Dependabot alert [#4](https://github.com/timdixon82/Braille-Reference/issues/4) ([#33](https://github.com/timdixon82/Braille-Reference/issues/33)) ([94a9739](https://github.com/timdixon82/Braille-Reference/commit/94a9739b91fd81ed619a14afa6a512ddf2fd0ad8))
+
 ## [0.4.0](https://github.com/timdixon82/Braille-Reference/compare/v0.3.0...v0.4.0) (2026-07-16)
 
 
