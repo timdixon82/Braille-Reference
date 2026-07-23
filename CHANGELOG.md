@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/timdixon82/Braille-Reference/compare/v0.4.1...v0.4.2) (2026-07-23)
+
+
+### Bug Fixes
+
+* bump fast-uri and brace-expansion to patch high-severity advisories ([#38](https://github.com/timdixon82/Braille-Reference/issues/38)) ([db9e1f5](https://github.com/timdixon82/Braille-Reference/commit/db9e1f55225b19946096c7acaa128ff49f7346e4))
+
 ## [0.4.1](https://github.com/timdixon82/Braille-Reference/compare/v0.4.0...v0.4.1) (2026-07-18)
 
 
