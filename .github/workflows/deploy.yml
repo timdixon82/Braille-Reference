@@ -62,6 +62,12 @@ jobs:
   # Use for projects with an npm build step that emits a folder (e.g. dist).
   # DELETE this job if your project is UNBUNDLED.
   build:
+    # GitHub Pages is not available for a private repository on a free
+    # account, so on a private repository there is nothing to deploy to and
+    # this job (and the deploy job that needs it) is reported as skipped,
+    # not failed. If a private repository is on a plan that includes Pages,
+    # remove this "if" line to turn the deploy on.
+    if: ${{ github.event.repository.private == false }}
     runs-on: ubuntu-latest
     outputs:
       is_browser_extension: ${{ steps.archetype.outputs.is_browser_extension }}
