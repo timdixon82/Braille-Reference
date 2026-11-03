@@ -1,0 +1,43 @@
+# Dependabot configuration.
+# Weekly, grouped dependency updates.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      javascript:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /.github/accessibility-tools
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      accessibility-tools:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /.github/lint-tools
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      lint-tools:
+        patterns: ["*"]
