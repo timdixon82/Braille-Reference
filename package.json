@@ -19,6 +19,6 @@
     "html-validate": "^11.2.0",
     "stylelint": "^16.19.1",
     "stylelint-config-standard": "^38.0.0",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.12"
   }
 }
