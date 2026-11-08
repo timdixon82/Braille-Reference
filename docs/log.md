@@ -13,3 +13,7 @@ Decision records follow Jacob's four Architecture Decision Records from `jacob-a
 Pull request #28's CI had one remaining red check: pa11y's WCAG 2.2 AAA scan reported `#status` at a contrast ratio of `NaN:1` and failed `WCAG2AAA.Principle1.Guideline1_4.1_4_6.G17.Fail`. `#status` has a semi-transparent background, `rgba(235, 156, 82, 0.16)`; pa11y's HTML_CodeSniffer engine cannot composite a semi-transparent background, so it cannot compute a real ratio. axe-core, which composites alpha correctly, reports 0 violations at WCAG 2.2 AAA and confirms `#status` conforms.
 
 `pa11y.json`'s `ignore` array now suppresses `WCAG2AAA.Principle1.Guideline1_4.1_4_6.G17.Fail`, the narrowest scope pa11y's ignore mechanism allows (rule code only, no per-element scoping), with an inline `_ignoreComment` recording the rationale. `docs/exceptions/pa11y-alpha-compositing-status.md` records the exception per Decision 017's status-block convention (State: Active). axe-core remains a required, un-ignored gate and continues to enforce the 7:1 AAA requirement across the whole page, including `#status`.
+
+## [2026-11-08] ingest | npm tool folders moved to ci-tools
+
+The lint-tools and accessibility-tools folders moved from .github to a top-level ci-tools folder, because Dependabot refuses to create npm update pull requests for a root .github folder. The lint and accessibility workflows and the Dependabot entries now point at ci-tools. This follows the pilot in work folder 058 of the AgentTeam repository. Older work-folder notes that name the old paths are left as history.
