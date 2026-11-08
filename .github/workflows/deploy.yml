@@ -184,15 +184,19 @@ jobs:
             echo "path=dist" >> "$GITHUB_OUTPUT"
           else
             mkdir _site
-            # The allow-listed paths below (styles/, scripts/, data/,
-            # assets/, index.html) are published to the public site: never
-            # put a secret or other non-public file in any of them.
+            # PROJECT-SPECIFIC ALLOW-LIST (Braille Reference). This differs
+            # from the template list on purpose, and deploy.yml is listed in
+            # .claude/workflows-protect so a template sync keeps it.
+            # The site needs exactly: index.html, assets/ (css, fonts, js,
+            # analytics) and js/braille-data.js (a module imported by
+            # index.html). The root scripts/ folder is team tooling and the
+            # js/braille-data.test.js file is a unit test, so neither is
+            # published. The paths below are public: never put a secret or
+            # other non-public file in any of them.
             rsync -a --prune-empty-dirs --safe-links \
                      --include='/index.html' \
-                     --include='/styles/***' \
-                     --include='/scripts/***' \
-                     --include='/data/***' \
                      --include='/assets/***' \
+                     --include='/js/braille-data.js' \
                      --include='*/' \
                      --exclude='*' \
                      ./ _site/
