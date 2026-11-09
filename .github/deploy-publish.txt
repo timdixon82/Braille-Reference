@@ -1,0 +1,15 @@
+# Publish list for GitHub Pages (Braille Reference).
+#
+# This file decides what becomes public. It is hand-written to match what the
+# site served before the publish list existed. Every path below is public:
+# never put a secret or other non-public file in any of them.
+/index.html
+/assets/
+/js/braille-data.js
+require /index.html
+require /js/braille-data.js
+require /assets/js/theme.js
+require /assets/css/colors_and_type.css
+require /assets/analytics/count.js
+require /assets/fonts/Roboto-VariableFont.ttf
+require /assets/fonts/Roboto-Italic-VariableFont.ttf
