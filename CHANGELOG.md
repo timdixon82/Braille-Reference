@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.3](https://github.com/timdixon82/Braille-Reference/compare/v0.4.2...v0.4.3) (2026-11-12)
+
+
+### Bug Fixes
+
+* correct the deploy allow-list to the files the site loads ([#55](https://github.com/timdixon82/Braille-Reference/issues/55)) ([86d90ce](https://github.com/timdixon82/Braille-Reference/commit/86d90ce922e6d2bad3b2aabc6f5e8bc337595920))
+* **deps:** clear Dependabot alerts in root lock file ([#47](https://github.com/timdixon82/Braille-Reference/issues/47)) ([9c25a12](https://github.com/timdixon82/Braille-Reference/commit/9c25a1228aa723b3980fde3a78815576c88d94ea))
+
 ## [0.4.2](https://github.com/timdixon82/Braille-Reference/compare/v0.4.1...v0.4.2) (2026-07-23)
 
 
