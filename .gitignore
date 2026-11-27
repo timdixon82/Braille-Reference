@@ -63,3 +63,9 @@ playwright-report/
 # written by the claude-in-chrome / Playwright MCP tools during a session.
 # Local scratch space, never committed.
 .playwright-mcp/
+
+# Local audit trail written by a team hook, not for the repository
+/lint.md
+
+# Local audit trail written by a team hook, not for the repository
+.claude/.status-rebuild.lock
